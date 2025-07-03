@@ -80,3 +80,68 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <?php require_once 'app/views/templates/footer.php' ?>
+<?php require_once 'app/views/templates/header.php' ?>
+<div class="container">
+    <div class="page-header" id="banner">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1>My Notes</h1>
+                <p class="lead">Manage your notes and tasks</p>
+            </div>
+            <div class="col-lg-4 text-end">
+                <a href="/notes/create" class="btn btn-primary">Create New Note</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <?php if (empty($notes)): ?>
+                <div class="alert alert-info">
+                    <h4>No notes yet!</h4>
+                    <p>Get started by <a href="/notes/create">creating your first note</a>.</p>
+                </div>
+            <?php else: ?>
+                <div class="row">
+                    <?php foreach ($notes as $note): ?>
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 <?= $note['completed'] ? 'bg-light' : '' ?>">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <span class="badge <?= $note['completed'] ? 'bg-success' : 'bg-warning text-dark' ?>">
+                                        <?= $note['completed'] ? 'Completed' : 'Pending' ?>
+                                    </span>
+                                    <small class="text-muted"><?= date('M j, Y', strtotime($note['created_at'])) ?></small>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title <?= $note['completed'] ? 'text-decoration-line-through text-muted' : '' ?>">
+                                        <?= htmlspecialchars($note['subject']) ?>
+                                    </h5>
+                                    <?php if (!empty($note['content'])): ?>
+                                        <p class="card-text <?= $note['completed'] ? 'text-muted' : '' ?>">
+                                            <?= nl2br(htmlspecialchars(substr($note['content'], 0, 100))) ?>
+                                            <?= strlen($note['content']) > 100 ? '...' : '' ?>
+                                        </p>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="btn-group w-100" role="group">
+                                        <a href="/notes/toggle/<?= $note['id'] ?>" 
+                                           class="btn btn-sm <?= $note['completed'] ? 'btn-warning' : 'btn-success' ?>">
+                                            <?= $note['completed'] ? 'Reopen' : 'Complete' ?>
+                                        </a>
+                                        <a href="/notes/edit/<?= $note['id'] ?>" class="btn btn-sm btn-primary">Edit</a>
+                                        <a href="/notes/delete/<?= $note['id'] ?>" 
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('Are you sure you want to delete this note?')">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<?php require_once 'app/views/templates/footer.php' ?>
