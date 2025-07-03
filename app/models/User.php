@@ -58,4 +58,3 @@ class User {
         $statement->execute();
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
-}
