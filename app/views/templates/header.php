@@ -49,4 +49,4 @@ if (!isset($_SESSION['auth'])) {
       </ul>
     </div>
   </div>
-</nav>
+</nav
