@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-lg-8">
                 <h1>Edit Reminder</h1>
-                <p class="lead">Update your reminder</p>
+                <p class="lead">Update your reminder details</p>
             </div>
             <div class="col-lg-4 text-end">
                 <a href="/reminders" class="btn btn-secondary">Back to Reminders</a>
@@ -46,6 +46,20 @@
                             <button type="submit" class="btn btn-primary">Update Reminder</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Reminder Info</h6>
+                </div>
+                <div class="card-body">
+                    <small class="text-muted">
+                        <strong>Created:</strong> <?= date('F j, Y \a\t g:i A', strtotime($reminder['created_at'])) ?><br>
+                        <strong>Status:</strong> <?= $reminder['completed'] ? 'Completed' : 'Pending' ?>
+                    </small>
                 </div>
             </div>
         </div>

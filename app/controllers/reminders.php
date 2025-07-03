@@ -1,138 +1,115 @@
-
 <?php
 
 class Reminders extends Controller {
 
     public function index() {
-        // Check if user is authenticated
-        if (!isset($_SESSION['auth']) || $_SESSION['auth'] != 1) {
+        $user_id = $this->getUserId();
+        if (!$user_id) {
             header('Location: /login');
             die;
         }
-        
-        $reminderModel = $this->model('reminders');
-        $reminders = $reminderModel->getAllByUser($_SESSION['user_id']);
-        
-        $this->view('reminders/index', ['reminders' => $reminders]);
+
+        $reminder = $this->model('Reminder');
+        $data['reminders'] = $reminder->getAllByUser($user_id);
+
+        $this->view('reminders/index', $data);
     }
 
     public function create() {
-        // Check if user is authenticated
-        if (!isset($_SESSION['auth']) || $_SESSION['auth'] != 1) {
+        $user_id = $this->getUserId();
+        if (!$user_id) {
             header('Location: /login');
             die;
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $subject = trim($_POST['subject'] ?? '');
-            $content = trim($_POST['content'] ?? '');
-            
-            if (empty($subject)) {
-                $error = 'Subject is required';
-                $this->view('reminders/create', ['error' => $error]);
-                return;
-            }
-            
-            $reminderModel = $this->model('reminders');
-            if ($reminderModel->create($_SESSION['user_id'], $subject, $content)) {
-                header('Location: /reminders');
-                die;
+        if ($_POST) {
+            $reminder = $this->model('Reminder');
+            $subject = $_POST['subject'] ?? '';
+            $content = $_POST['content'] ?? '';
+
+            if (!empty($subject)) {
+                if ($reminder->create($user_id, $subject, $content)) {
+                    header('Location: /reminders');
+                    die;
+                } else {
+                    $data['error'] = 'Failed to create reminder';
+                }
             } else {
-                $error = 'Failed to create reminder';
-                $this->view('reminders/create', ['error' => $error]);
+                $data['error'] = 'Subject is required';
             }
-        } else {
-            $this->view('reminders/create');
         }
+
+        $this->view('reminders/create', $data ?? []);
     }
 
     public function edit($id = null) {
-        // Check if user is authenticated
-        if (!isset($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-            header('Location: /login');
-            die;
-        }
-
-        if (!$id) {
+        $user_id = $this->getUserId();
+        if (!$user_id || !$id) {
             header('Location: /reminders');
             die;
         }
 
-        $reminderModel = $this->model('reminders');
-        $reminder = $reminderModel->getByIdAndUser($id, $_SESSION['user_id']);
-        
-        if (!$reminder) {
+        $reminder = $this->model('Reminder');
+        $data['reminder'] = $reminder->getById($id, $user_id);
+
+        if (!$data['reminder']) {
             header('Location: /reminders');
             die;
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $subject = trim($_POST['subject'] ?? '');
-            $content = trim($_POST['content'] ?? '');
+        if ($_POST) {
+            $subject = $_POST['subject'] ?? '';
+            $content = $_POST['content'] ?? '';
             $completed = isset($_POST['completed']) ? 1 : 0;
-            
-            if (empty($subject)) {
-                $error = 'Subject is required';
-                $this->view('reminders/edit', ['reminder' => $reminder, 'error' => $error]);
-                return;
-            }
-            
-            if ($reminderModel->update($id, $subject, $content, $completed)) {
-                header('Location: /reminders');
-                die;
+
+            if (!empty($subject)) {
+                if ($reminder->update($id, $user_id, $subject, $content, $completed)) {
+                    header('Location: /reminders');
+                    die;
+                } else {
+                    $data['error'] = 'Failed to update reminder';
+                }
             } else {
-                $error = 'Failed to update reminder';
-                $this->view('reminders/edit', ['reminder' => $reminder, 'error' => $error]);
+                $data['error'] = 'Subject is required';
             }
-        } else {
-            $this->view('reminders/edit', ['reminder' => $reminder]);
         }
+
+        $this->view('reminders/edit', $data);
     }
 
     public function delete($id = null) {
-        // Check if user is authenticated
-        if (!isset($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-            header('Location: /login');
-            die;
-        }
-
-        if (!$id) {
+        $user_id = $this->getUserId();
+        if (!$user_id || !$id) {
             header('Location: /reminders');
             die;
         }
 
-        $reminderModel = $this->model('reminders');
-        $reminder = $reminderModel->getByIdAndUser($id, $_SESSION['user_id']);
-        
-        if ($reminder) {
-            $reminderModel->delete($id);
-        }
-        
+        $reminder = $this->model('Reminder');
+        $reminder->delete($id, $user_id);
         header('Location: /reminders');
         die;
     }
 
     public function toggle($id = null) {
-        // Check if user is authenticated
-        if (!isset($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-            header('Location: /login');
-            die;
-        }
-
-        if (!$id) {
+        $user_id = $this->getUserId();
+        if (!$user_id || !$id) {
             header('Location: /reminders');
             die;
         }
 
-        $reminderModel = $this->model('reminders');
-        $reminder = $reminderModel->getByIdAndUser($id, $_SESSION['user_id']);
-        
-        if ($reminder) {
-            $newStatus = $reminder['completed'] ? 0 : 1;
-            $reminderModel->updateStatus($id, $newStatus);
-        }
-        
+        $reminder = $this->model('Reminder');
+        $reminder->toggleComplete($id, $user_id);
         header('Location: /reminders');
         die;
+    }
+
+    private function getUserId() {
+        if (!isset($_SESSION['auth']) || !isset($_SESSION['username'])) {
+            return false;
+        }
+
+        $user = $this->model('User');
+        $userData = $user->getUserByUsername($_SESSION['username']);
+        return $userData['id'] ?? false;
     }
 }
