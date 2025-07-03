@@ -3,7 +3,7 @@
 class Reminders extends Controller {
 
     public function index() {
-        $user_id = $this->getUserId()
+        $user_id = $this->getUserId();
         if (!$user_id) {
             header('Location: /login');
             die;
