@@ -1,4 +1,3 @@
-app-models-reminders.php
 <?php
 
 class Reminder {
