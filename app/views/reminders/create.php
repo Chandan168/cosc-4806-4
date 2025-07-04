@@ -1,41 +1,44 @@
-<?php require_once 'app/views/templates/header.php' ?>
-<div class="container">
-    <div class="page-header" id="banner">
-        <div class="row">
-            <div class="col-lg-8">
-                <h1>Create New Reminder</h1>
-                <p class="lead">Add a new task or reminder</p>
-            </div>
-            <div class="col-lg-4 text-end">
-                <a href="/reminders" class="btn btn-secondary">Back to Reminders</a>
-            </div>
-        </div>
-    </div>
+<?php require_once 'app/views/templates/header.php'; ?>
 
-    <div class="row">
-        <div class="col-lg-8">
-            <?php if (isset($error)): ?>
-                <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
-            <?php endif; ?>
-
-            <div class="card">
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-plus-circle"></i> Create New Note
+                    </h3>
+                </div>
                 <div class="card-body">
-                    <form method="POST">
+                    <form action="/reminders/store" method="POST">
                         <div class="mb-3">
                             <label for="subject" class="form-label">Subject *</label>
-                            <input type="text" class="form-control" id="subject" name="subject" 
-                                   value="<?= htmlspecialchars($_POST['subject'] ?? '') ?>" required>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="subject" 
+                                   name="subject" 
+                                   placeholder="Enter note subject"
+                                   required 
+                                   maxlength="255">
                         </div>
 
-                        <div class="mb-3">
-                            <label for="content" class="form-label">Details</label>
-                            <textarea class="form-control" id="content" name="content" rows="5" 
-                                      placeholder="Add additional details about your reminder..."><?= htmlspecialchars($_POST['content'] ?? '') ?></textarea>
+                        <div class="mb-4">
+                            <label for="content" class="form-label">Content</label>
+                            <textarea class="form-control" 
+                                      id="content" 
+                                      name="content" 
+                                      rows="6" 
+                                      placeholder="Enter your note content here..."></textarea>
+                            <div class="form-text">Optional: Add detailed content for your note.</div>
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="/reminders" class="btn btn-secondary me-md-2">Cancel</a>
-                            <button type="submit" class="btn btn-success">Create Reminder</button>
+                            <a href="/reminders" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Save Note
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -44,4 +47,12 @@
     </div>
 </div>
 
-<?php require_once 'app/views/templates/footer.php' ?>
+<script>
+// Auto-resize textarea
+document.getElementById('content').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+});
+</script>
+
+<?php require_once 'app/views/templates/footer.php'; ?>

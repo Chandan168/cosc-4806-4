@@ -32,7 +32,6 @@ class User {
 
         if (password_verify($password, $rows['password'])) {
             $_SESSION['auth'] = 1;
-            $_SESSION['user_id'] = $rows['id'];
             $_SESSION['username'] = ucwords($username);
             unset($_SESSION['failedAuth']);
             header('Location: /home');
@@ -48,15 +47,16 @@ class User {
         }
     }
 
-    public function getUserByUsername($username) {
+    public function getUserIdByUsername($username) {
         $db = db_connect();
         if ($db === null) {
             return null;
         }
-
-        $statement = $db->prepare("SELECT * FROM users WHERE username = :username");
-        $statement->bindValue(':username', strtolower($username));
+        $username = strtolower($username);
+        $statement = $db->prepare("SELECT id FROM users WHERE username = :username");
+        $statement->bindValue(':username', $username);
         $statement->execute();
-        return $statement->fetch(PDO::FETCH_ASSOC);
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result ? $result['id'] : null;
     }
 }
