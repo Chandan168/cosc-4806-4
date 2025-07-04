@@ -7,8 +7,7 @@ class Reminder {
         if ($db === null) {
             return [];
         }
-        // Use TRUE for true boolean value
-        $statement = $db->prepare("SELECT * FROM reminders WHERE user_id = :user_id AND deleted = TRUE ORDER BY created_at DESC");
+        $statement = $db->prepare("SELECT * FROM reminders WHERE user_id = :user_id AND deleted = FALSE ORDER BY created_at DESC");
         $statement->bindValue(':user_id', $userId, PDO::PARAM_INT);
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -19,8 +18,7 @@ class Reminder {
         if ($db === null) {
             return null;
         }
-        // Use TRUE for true boolean value
-        $statement = $db->prepare("SELECT * FROM reminders WHERE id = :id AND user_id = :user_id AND deleted = TRUE");
+        $statement = $db->prepare("SELECT * FROM reminders WHERE id = :id AND user_id = :user_id AND deleted = FALSE");
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
         $statement->bindValue(':user_id', $userId, PDO::PARAM_INT);
         $statement->execute();
@@ -49,7 +47,7 @@ class Reminder {
         $statement->bindValue(':user_id', $userId, PDO::PARAM_INT);
         $statement->bindValue(':subject', $subject, PDO::PARAM_STR);
         $statement->bindValue(':content', $content, PDO::PARAM_STR);
-        $statement->bindValue(':completed', $completed, PDO::PARAM_BOOL); // Use correct parameter type
+        $statement->bindValue(':completed', $completed, PDO::PARAM_BOOL);
         return $statement->execute();
     }
 
