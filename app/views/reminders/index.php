@@ -4,11 +4,11 @@
     <h1 class="display-4">My Notes & Reminders</h1>
     <a href="/reminders/create" class="btn btn-success btn-lg">Add New Note</a>
 
-    <?php if (empty($reminders)): ?>
+    <?php if (empty($data['reminders'])): ?>
         <div class="alert alert-info">No notes found.</div>
     <?php else: ?>
         <div class="row">
-            <?php foreach ($reminders as $reminder): ?>
+            <?php foreach ($data['reminders'] as $reminder): ?>
                 <div class="col-md-6">
                     <h5><?php echo htmlspecialchars($reminder['subject']); ?></h5>
                     <a href="/reminders/edit/<?php echo $reminder['id']; ?>" class="btn btn-warning">Edit</a>

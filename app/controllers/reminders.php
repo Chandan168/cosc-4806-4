@@ -6,8 +6,7 @@ class Reminders extends Controller {
             die;
         }
         $reminder = $this->model('Reminder');
-        $user = $this->model('User');
-        $userId = $user->getUserIdByUsername($_SESSION['username']);
+        $userId = $_SESSION['user_id'];
         $reminders = $reminder->getAllByUser($userId);
 
         $data = ['reminders' => $reminders];
@@ -30,8 +29,7 @@ class Reminders extends Controller {
             $content = $_POST['content'] ?? '';
             if (!empty($subject)) {
                 $reminder = $this->model('Reminder');
-                $user = $this->model('User');
-                $userId = $user->getUserIdByUsername($_SESSION['username']);
+                $userId = $_SESSION['user_id'];
 
                 if ($reminder->create($userId, $subject, $content)) {
                     header('Location: /reminders');
